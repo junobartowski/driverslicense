@@ -1,5 +1,9 @@
 <?php
 
+use \yii\web\Request;
+
+$baseUrl = str_replace('/web', '', (new Request)->getBaseUrl());
+
 $params = require(__DIR__ . '/params.php');
 
 $config = [
@@ -9,7 +13,7 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => off,
+            'cookieValidationKey' => 'off',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -37,6 +41,18 @@ $config = [
                 ],
             ],
         ],
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+           // 'enableStrictParsing' => true,
+            'rules' => array(
+                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+               // '<action:error>' => 'site/<action>',
+            ),
+        ],
         'db' => require(__DIR__ . '/db.php'),
     ],
     'params' => $params,
@@ -47,6 +63,7 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
+        'allowedIPs' => ['127.0.0.1'],
     ];
 
     $config['bootstrap'][] = 'gii';
